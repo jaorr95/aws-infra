@@ -7,6 +7,13 @@ resource "aws_s3_bucket" "bucket" {
   }
 }
 
+# resource "aws_s3_bucket_policy" "bucket_policy" {
+#   bucket = aws_s3_bucket.bucket.id
+
+#   policy = templatefile("${path.module}/config/iam/bucket-policy.tpl", local.bucket_policy_params)
+
+# }
+
 resource "aws_s3_bucket_object" "files" {
 
   count   = var.object_files_quantity

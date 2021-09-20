@@ -2,11 +2,11 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/aws"
+	httphelper "github.com/gruntwork-io/terratest/modules/http-helper"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func TestFlugel(t *testing.T) {
@@ -17,20 +17,17 @@ func TestFlugel(t *testing.T) {
 
 	defer terraform.Destroy(t, terraformOptions)
 	terraform.InitAndApply(t, terraformOptions)
-	validateBucket(t, terraformOptions)
+	validateWebServer(t, terraformOptions)
 	
 }
 
-func validateBucket(t *testing.T, opts *terraform.Options) {
+func validateWebServer(t *testing.T, opts *terraform.Options) {
 
-	bucketName := terraform.Output(t, opts, "defined_bucket_name")
-	expectedCcontentS3 := terraform.Output(t, opts, "content_files_s3")
+	url := terraform.Output(t, opts, "dns_alb")
+	contentS3 := terraform.Output(t, opts, "content_files_s3")
 	filesQuantity, _ := strconv.Atoi(terraform.Output(t, opts, "object_files_quantity"))
-	aws.AssertS3BucketExists(t, "us-west-2", bucketName)
-
 	for i := 1; i <= filesQuantity; i++ {
-		fileContent := aws.GetS3ObjectContents(t, "us-west-2", bucketName, fmt.Sprintf("file%d.txt", i))
-		assert.Equal(t, expectedCcontentS3, fileContent)
+		httphelper.HttpGetWithRetry(t, fmt.Sprintf("http://%s/files/file%d.txt", url, i), nil, 200, contentS3, 20, 30 * time.Second)
 	}
 
 }
