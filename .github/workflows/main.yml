@@ -1,5 +1,5 @@
 name: Infra Github Action
-on: [push]
+on: [pull_request]
 jobs:
   Lint-Terraform:
     runs-on: ubuntu-latest
