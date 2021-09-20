@@ -7,6 +7,7 @@ Repo for infrastructure automation in aws
 
 * terraform => v0.13.5
 * go => 1.16
+* User aws credentials must be named terraform, and have permission to manage s3, ec2, vpc, security groups, load balancers, iam.
 
 ### Steps
 
