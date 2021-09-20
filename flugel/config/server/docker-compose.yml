@@ -1,0 +1,23 @@
+version: "3"
+services:
+    traefik:
+        image: traefik:v2.4.11
+        command:
+          - "--providers.docker=true"
+          - "--providers.docker.exposedbydefault=false"
+          - "--entrypoints.web.address=:80"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        ports: 
+          - 80:80
+          - 8080:8080
+    servers3:
+        build: 
+            context: app/
+        restart: always
+        env_file: 
+          - app/server.env
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.servers3.rule=PathPrefix(`/`)"
+          - "traefik.http.routers.servers3.entrypoints=web"

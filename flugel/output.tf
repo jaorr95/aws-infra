@@ -1,3 +1,11 @@
+output "instance_ip_addr" {
+  value = aws_instance.public_instance[*].public_ip
+}
+
+output "dns_alb" {
+  value = aws_elb.lb_files.dns_name
+}
+
 output "content_files_s3" {
   value = local.content_file
 }
