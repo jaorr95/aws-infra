@@ -3,7 +3,7 @@ resource "aws_iam_role_policy" "s3_policy" {
   role = aws_iam_role.ec2_role.id
 
 
-  policy = templatefile("${path.module}/config/iam/policy-s3-access.tpl", {bucket_name = var.bucket_name})
+  policy = templatefile("${path.module}/config/iam/policy-s3-access.tpl", { bucket_name = var.bucket_name })
 }
 
 resource "aws_iam_role" "ec2_role" {

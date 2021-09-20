@@ -18,7 +18,7 @@ locals {
       path    = "/etc/server/app/main.go"
     },
     {
-      content = base64encode(templatefile("${path.module}/config/server/app/server.tpl", { bucket_name = var.bucket_name}))
+      content = base64encode(templatefile("${path.module}/config/server/app/server.tpl", { bucket_name = var.bucket_name }))
       path    = "/etc/server/app/server.env"
     },
     {
