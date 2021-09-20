@@ -1,0 +1,47 @@
+name: Infra Github Action
+on: [pull_request]
+jobs:
+  Lint-Terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+      - name: Terraform Format
+        id: fmt
+        working-directory: flugel
+        run: terraform fmt -check
+      - name: Terraform Init
+        id: init
+        working-directory: flugel
+        run: terraform init
+      - name: Terraform Validate
+        id: validate
+        working-directory: flugel
+        run: terraform validate -no-color
+
+  Terratest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+          terraform_wrapper: false
+      - name: Download Go Modules
+        working-directory: test
+        run: go mod download
+      - name: Run Go Tests
+        working-directory: test
+        run: go test -v
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
